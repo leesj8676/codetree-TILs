@@ -102,6 +102,7 @@ public class Main {
 		if (meetWall(idx, d))
 			return;
 
+		moveKnights[idx] = true;
 		// 재귀를 사용해서 idx번째와 부딪히는 모든 기사 이동 가능한지 체크
 		canGo(idx, d);
 
@@ -131,6 +132,7 @@ public class Main {
 			}
 			// 현재 기사 체력 업데이트 (최소 0)
 			k.h1 = (k.h1 - cnt) > 0 ? k.h1 - cnt : 0;
+			if(k.h1==0) knights[i] = null;
 		}
 	}
 
@@ -143,22 +145,22 @@ public class Main {
 				continue;
 			if (!isColide(idx, d, i))
 				continue;
-
+			
 			// 충돌하는 기사 중, 벽에 닿는 경우
 			if (meetWall(i, d)) {
 				canGo = false;
 				return false;
 			}
 
+			// 현재 기사가 충돌 가능하면 체크
+			moveKnights[i] = true;
+			
 			// 재귀적으로 해당 기사가 이동 가능한지 확인
 			if (!canGo(i, d)) {
 				canGo = false;
 				return false;
 			}
 		}
-
-		// 현재 기사가 이동 가능하면 이동
-		moveKnights[idx] = true;
 		return true;
 	}
 

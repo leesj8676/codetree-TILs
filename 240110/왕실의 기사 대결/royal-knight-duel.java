@@ -95,7 +95,7 @@ public class Main {
 		moveKnights = new boolean[N];
 
 		Knight k = knights[idx];
-		if (k.h1 == 0)
+		if (k == null)
 			return;
 
 		// 자기 자신이 이동 가능한지 확인
@@ -141,7 +141,7 @@ public class Main {
 		for (int i = 0; i < N; i++) {
 			if (idx == i)
 				continue;
-			if (knights[i].h1 == 0)
+			if (knights[i] == null)
 				continue;
 			if (!isColide(idx, d, i))
 				continue;

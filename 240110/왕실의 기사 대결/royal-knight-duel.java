@@ -82,7 +82,7 @@ public class Main {
 		int ans = 0;
 		for (int i = 0; i < N; i++) {
 			Knight k = knights[i];
-			if (k.h1 == 0)
+			if (k == null)
 				continue;
 			ans += (k.h0 - k.h1);
 		}

@@ -94,6 +94,11 @@ public class Main {
 		if (k.h1 == 0)
 			return;
 
+		// 자기 자신이 이동가능한지 부터 확인
+		if (meetWall(idx, d)) {
+			return;
+		}
+
 		// 재귀를 사용해서 idx번째와 부딪히는 모든 기사 이동 가능한지 체크
 		canGo(idx, d);
 
@@ -188,6 +193,9 @@ public class Main {
 		switch (d) {
 		case 0: // 위쪽
 			r0--;
+			if (r0 < 0)
+				return true;
+
 			// 변경된 (r0, c0~c1)에서 벽이 있는지 탐색
 			for (int c = c0; c <= c1; c++) {
 				if (arr[r0][c] == 2) {
@@ -197,6 +205,8 @@ public class Main {
 			break;
 		case 1: // 오른쪽
 			c1++;
+			if (c1 >= L)
+				return true;
 			// 변경된 (r0~r1, c1)에서 벽이 있는지 탐색
 			for (int r = r0; r <= r1; r++) {
 				if (arr[r][c1] == 2) {
@@ -206,6 +216,8 @@ public class Main {
 			break;
 		case 2: // 아래쪽
 			r1++;
+			if (r1 >= L)
+				return true;
 			for (int c = c0; c <= c1; c++) {
 				if (arr[r1][c] == 2) {
 					return true;
@@ -214,6 +226,9 @@ public class Main {
 			break;
 		case 3: // 왼쪽
 			c0--;
+			if (c0 < 0)
+				return true;
+
 			// 변경된 (r0~r1, c1)에서 벽이 있는지 탐색
 			for (int r = r0; r <= r1; r++) {
 				if (arr[r][c0] == 2) {

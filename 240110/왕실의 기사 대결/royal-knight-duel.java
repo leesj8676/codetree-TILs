@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class Main {
 
@@ -11,7 +12,7 @@ public class Main {
 //		int w,h;
 
 		public String toString() {
-			return "방패 (" + r0 + ", " + c0 + ") ~ (" + r1 + ", " + c1 + "), 체력 : " + h1;
+			return "방패 (" + r0 + ", " + c0 + ") ~ (" + r1 + ", " + c1 + "), 현재 체력 : " + h1 + "\n";
 		}
 
 		public Knight(int r0, int c0, int r1, int c1, int h0, int h1) {
@@ -24,7 +25,6 @@ public class Main {
 		}
 	}
 
-	// dr, dc
 	static int dr[] = new int[] { -1, 0, 1, 0 };
 	static int dc[] = new int[] { 0, 1, 0, -1 };
 	static int L, N, Q;
@@ -41,29 +41,32 @@ public class Main {
 		L = Integer.parseInt(split[0]);
 		N = Integer.parseInt(split[1]);
 		Q = Integer.parseInt(split[2]);
-		arr = new int[L][L];
+		arr = new int[L + 2][L + 2];
 		knights = new Knight[N];
 
-		// 격자 그대로 입력 받기
-		for (int i = 0; i < L; i++) {
+		for (int i = 0; i < L + 2; i++)
+			Arrays.fill(arr[i], 2);
+
+		// 체스판 입력받기(체스판 밖 포함)
+		for (int i = 1; i <= L; i++) {
 			split = br.readLine().split(" ");
-			for (int j = 0; j < L; j++) {
-				arr[i][j] = Integer.parseInt(split[j]);
+			for (int j = 1; j <= L; j++) {
+				arr[i][j] = Integer.parseInt(split[j - 1]);
 			}
 		}
 
 		for (int i = 0; i < N; i++) {
 			split = br.readLine().split(" ");
-			int r0 = Integer.parseInt(split[0]) - 1;
-			int c0 = Integer.parseInt(split[1]) - 1;
-			int h = Integer.parseInt(split[2]) - 1;
-			int w = Integer.parseInt(split[3]) - 1;
+			int r0 = Integer.parseInt(split[0]);
+			int c0 = Integer.parseInt(split[1]);
+			int h = Integer.parseInt(split[2]);
+			int w = Integer.parseInt(split[3]);
 			int h0 = Integer.parseInt(split[4]);
-			knights[i] = new Knight(r0, c0, r0 + h, c0 + w, h0, h0);
+			knights[i] = new Knight(r0, c0, r0 + h - 1, c0 + w - 1, h0, h0);
 		}
 
 		// q 개수만큼 명령 받기
-		for (int i = 0; i < Q; i++) {
+		for (int i = 1; i <= Q; i++) {
 			split = br.readLine().split(" ");
 			int idx = Integer.parseInt(split[0]) - 1;
 			int d = Integer.parseInt(split[1]);
@@ -71,10 +74,11 @@ public class Main {
 			simulate(idx, d);
 		}
 
-		getAns();
+		int ans = getAns();
+		System.out.println(ans);
 	}
 
-	private static void getAns() {
+	private static int getAns() {
 		int ans = 0;
 		for (int i = 0; i < N; i++) {
 			Knight k = knights[i];
@@ -82,11 +86,11 @@ public class Main {
 				continue;
 			ans += (k.h0 - k.h1);
 		}
-		System.out.println(ans);
+		return ans;
 	}
 
 	private static void simulate(int idx, int d) {
-		// 명령 한번마다 체크하는 변수 초기화
+		// 명령 한 번마다 체크하는 변수 초기화
 		canGo = true;
 		moveKnights = new boolean[N];
 
@@ -94,10 +98,9 @@ public class Main {
 		if (k.h1 == 0)
 			return;
 
-		// 자기 자신이 이동가능한지 부터 확인
-		if (meetWall(idx, d)) {
+		// 자기 자신이 이동 가능한지 확인
+		if (meetWall(idx, d))
 			return;
-		}
 
 		// 재귀를 사용해서 idx번째와 부딪히는 모든 기사 이동 가능한지 체크
 		canGo(idx, d);
@@ -109,16 +112,14 @@ public class Main {
 					move(i, d);
 				}
 			}
+			// 대결 이후 데미지 값 업데이트
+			damageUpdate(idx);
 		}
-
-		moveKnights[idx] = false;
-		// 대결 이후 데미지 값 업데이트
-		damageUpdate();
 	}
 
-	private static void damageUpdate() {
+	private static void damageUpdate(int idx) {
 		for (int i = 0; i < N; i++) {
-			if (!moveKnights[i])
+			if (!moveKnights[i] || i == idx)
 				continue;
 			Knight k = knights[i];
 			int cnt = 0;
@@ -129,7 +130,7 @@ public class Main {
 				}
 			}
 			// 현재 기사 체력 업데이트 (최소 0)
-			k.h1 = k.h1 - cnt > 0 ? k.h1 - cnt : 0;
+			k.h1 = (k.h1 - cnt) > 0 ? k.h1 - cnt : 0;
 		}
 	}
 
@@ -193,9 +194,6 @@ public class Main {
 		switch (d) {
 		case 0: // 위쪽
 			r0--;
-			if (r0 < 0)
-				return true;
-
 			// 변경된 (r0, c0~c1)에서 벽이 있는지 탐색
 			for (int c = c0; c <= c1; c++) {
 				if (arr[r0][c] == 2) {
@@ -205,8 +203,6 @@ public class Main {
 			break;
 		case 1: // 오른쪽
 			c1++;
-			if (c1 >= L)
-				return true;
 			// 변경된 (r0~r1, c1)에서 벽이 있는지 탐색
 			for (int r = r0; r <= r1; r++) {
 				if (arr[r][c1] == 2) {
@@ -216,8 +212,6 @@ public class Main {
 			break;
 		case 2: // 아래쪽
 			r1++;
-			if (r1 >= L)
-				return true;
 			for (int c = c0; c <= c1; c++) {
 				if (arr[r1][c] == 2) {
 					return true;
@@ -226,8 +220,6 @@ public class Main {
 			break;
 		case 3: // 왼쪽
 			c0--;
-			if (c0 < 0)
-				return true;
 
 			// 변경된 (r0~r1, c1)에서 벽이 있는지 탐색
 			for (int r = r0; r <= r1; r++) {

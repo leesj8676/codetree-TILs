@@ -10,7 +10,7 @@ public class Main {
 
 		n = Integer.parseInt(split[0]);
 		t = Integer.parseInt(split[1]);
-		t = t > (2 * n) ? t % (2 * n) : t;
+		t = t > (3 * n) ? t % (3 * n) : t;
 
 		int[][] arr = new int[3][n];
 

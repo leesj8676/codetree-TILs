@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 public class Main {
@@ -29,7 +30,7 @@ public class Main {
 	static int arr[][];
 
 	// NxN 사이즈의 트리 맵 선언 (총들 관리)
-	static ArrayList<TreeSet<Integer>> gunsInArr = new ArrayList<TreeSet<Integer>>();
+	static ArrayList<PriorityQueue<Integer>> gunsInArr = new ArrayList<PriorityQueue<Integer>>();
 
 	public static void main(String[] args) throws Exception {
 		// 입력받기
@@ -44,7 +45,7 @@ public class Main {
 		for (int i = 0; i < n; i++) {
 			split = br.readLine().split(" ");
 			for (int j = 0; j < n; j++) {
-				TreeSet<Integer> guns = new TreeSet<Integer>();
+				PriorityQueue<Integer> guns = new PriorityQueue<Integer>();
 				gunsInArr.add(guns);
 				int val = Integer.parseInt(split[j]);
 				if (val != 0)
@@ -95,14 +96,14 @@ public class Main {
 					arr[nx][ny] = index;
 
 					// 총이 있다면, 총 공격력 비교 후 바꾸기 (클래스의 플레이어 위치 값 변경, guns 도 변경)
-					TreeSet<Integer> guns = gunsInArr.get(nx * n + ny);
+					PriorityQueue<Integer> guns = gunsInArr.get(nx * n + ny);
 					if (!guns.isEmpty()) {
-						int gun = guns.first() * -1;
+						int gun = guns.peek() * -1;
 						if (p.gun < gun) {
-							guns.pollFirst();
-							int val = p.gun;
-							if (val != 0) { // guns에 플레이어가 떨어트린 총의 공격력이 0이면 더하지 않음
-								guns.add(-val);
+							guns.poll();
+							int current = p.gun;
+							if (current != 0) { // guns에 플레이어가 떨어트린 총의 공격력이 0이면 더하지 않음
+								guns.add(-current);
 							}
 							p.gun = gun;
 						}
@@ -133,20 +134,22 @@ public class Main {
 					}
 
 					// 진 플레이어는 총 떨어트리기
-					TreeSet<Integer> guns = gunsInArr.get(nx * n + ny);
+					PriorityQueue<Integer> guns = gunsInArr.get(nx * n + ny);
 					int current = players.get(loserIndex).gun;
 					players.get(loserIndex).gun = 0;
 					if (current != 0) {
-						guns.add(current);
+						guns.add(current * -1);
 					}
 
 					// 이긴 플레이어는 모든 총 을 비교해서 바꾸기 (클래스의 플레이어 총 값 변경, guns도 변경)
-					int first = !guns.isEmpty() ? guns.first() * -1 : -999;
+					int first = !guns.isEmpty() ? guns.peek() * -1 : -999999;
 					current = players.get(winnerIndex).gun;
 					if (first > current) {
 						players.get(winnerIndex).gun = first;
-						guns.pollFirst();
-						guns.add(current);
+						guns.poll();
+						if (current != 0) {
+							guns.add(current * -1);
+						}
 					}
 
 					// 현재 클래스 플레이어 위치 값 우선 변경
@@ -184,8 +187,7 @@ public class Main {
 						// 총 공격력도 비교 후 바꾸기 (클래스의 플레이어 값 변경, guns도 변경)
 						guns = gunsInArr.get(nx * n + ny);
 						if (!guns.isEmpty()) {
-							int gun = guns.first() * -1;
-							guns.pollFirst();
+							int gun = guns.poll() * -1;
 							loser.gun = gun;
 						}
 						break;

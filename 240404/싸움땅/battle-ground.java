@@ -137,7 +137,7 @@ public class Main {
 					int current = players.get(loserIndex).gun;
 					players.get(loserIndex).gun = 0;
 					if (current != 0) {
-						guns.add(current * -1);
+						guns.add(current);
 					}
 
 					// 이긴 플레이어는 모든 총 을 비교해서 바꾸기 (클래스의 플레이어 총 값 변경, guns도 변경)

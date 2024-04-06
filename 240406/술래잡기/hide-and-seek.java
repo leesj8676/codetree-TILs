@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 /*
 
@@ -50,6 +51,17 @@ public class Main {
 		boolean isSnailClockwise = true; // 달팽이 이동 방향 시계 or 반시계
 		int sdi = 0, sdc = 0; // 현재 술래 달팽이 이동 방향 인덱스, 해당 인덱스로 몇 번 이동했는지 카운트
 
+		/* 디버깅용: 술래, 도망자 위치 저장 */
+		ArrayList<ArrayList<Integer>> peopleInArr = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				ArrayList<Integer> people = new ArrayList<>();
+				peopleInArr.add(people);
+			}
+		}
+
+		peopleInArr.get(n / 2 * n + n / 2).add(0);
+
 		for (int i = 1; i <= m; i++) {
 			split = br.readLine().split(" ");
 			int x = Integer.parseInt(split[0]) - 1;
@@ -59,6 +71,9 @@ public class Main {
 			cs[i] = y;
 			directions[i] = d;
 
+			ArrayList<Integer> people = peopleInArr.get(x * n + y);
+			people.add(i);
+
 			alives[i] = true;
 		}
 
@@ -67,6 +82,10 @@ public class Main {
 			int x = Integer.parseInt(split[0]) - 1;
 			int y = Integer.parseInt(split[1]) - 1;
 			trees[x][y] = true;
+
+			/* 디버깅용: 나무 위치 저장 */
+			ArrayList<Integer> people = peopleInArr.get(x * n + y);
+			people.add(-1);
 		}
 
 		// n 값에 맞게 달팽이 이동 규칙 설정
@@ -93,7 +112,7 @@ public class Main {
 					int nr = r + dr[d];
 					int nc = c + dc[d];
 					// 현재 방향으로 이동해도 격자를 벗어나지 않으면
-					if (0 <= nr && 0 < n && 0 <= nc && nc <= n) {
+					if (0 <= nr && nr < n && 0 <= nc && nc < n) {
 						// 움직이는 칸에 술래가 있는 경우 (암것도 안함)
 						if (nr == sr && nc == sc)
 							;
@@ -101,22 +120,59 @@ public class Main {
 							// 아니라면, 해당 칸으로 이동
 							rs[idx] = nr;
 							cs[idx] = nc;
+
+							/* 디버깅용: 도망자 위치 확인 */
+							ArrayList<Integer> people = peopleInArr.get(r * n + c);
+							for (int i = 0; i < people.size(); i++) {
+								if (people.get(i) == idx) {
+									people.remove(i);
+									break;
+								}
+							}
+							ArrayList<Integer> nPeople = peopleInArr.get(nr * n + nc);
+							nPeople.add(idx);
 						}
 					} else {
 						// 격자를 벗어나면, 방향 전환
 						// 술래가 없다면, 1칸 이동
 						d = (d + 2) % 4;
 						directions[idx] = d;
+						nr = r + dr[d];
+						nc = c + dc[d];
+
 						if (nr != sr || nc != sc) {
 							rs[idx] = nr;
 							cs[idx] = nc;
 						}
+
+						/* 디버깅용: 도망자 위치 확인 */
+						ArrayList<Integer> people = peopleInArr.get(r * n + c);
+						for (int i = 0; i < people.size(); i++) {
+							if (people.get(i) == idx) {
+								people.remove(i);
+								break;
+							}
+						}
+						ArrayList<Integer> nPeople = peopleInArr.get(nr * n + nc);
+						nPeople.add(idx);
 					}
 
 				}
 			}
 
+			// i 번째 술래 / (r, c) / 방향 : d
+
 			// 술래 이동
+
+			/* 디버깅용: 술래 위치 확인 */
+			ArrayList<Integer> people = peopleInArr.get(sr * n + sc);
+			for (int i = 0; i < people.size(); i++) {
+				if (people.get(i) == 0) {
+					people.remove(i);
+					break;
+				}
+			}
+
 			sr += dr[sd]; // 술래 다음 위치
 			sc += dc[sd];
 
@@ -148,6 +204,9 @@ public class Main {
 				}
 			}
 
+			ArrayList<Integer> nPeople = peopleInArr.get(sr * n + sc);
+			nPeople.add(0);
+
 			// 현재 방향에서 3칸 순회 하며 (0~2) arr 조사
 			for (int i = 0; i < 3; i++) {
 				int nr = sr + dr[sd] * i;
@@ -165,6 +224,15 @@ public class Main {
 					if (nr == r && nc == c) {
 						alives[j] = false;
 						ans += t;
+
+						/* 디버깅용: 도망자 위치 확인 */
+						people = peopleInArr.get(r * n + c);
+						for (int i2 = 0; i2 < people.size(); i2++) {
+							if (people.get(i2) == j) {
+								people.remove(i2);
+								break;
+							}
+						}
 					}
 				}
 			}

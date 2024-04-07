@@ -81,12 +81,16 @@ public class Main {
 			ballPos[i] = new int[] { r, c };
 		}
 
-		long ans = 0;
+				long ans = 0;
 		for (int round = 0; round < k; round++) {
 			visited = new boolean[n][n];
 			dist = Integer.MIN_VALUE;
 			// 팀별 한칸씩 이동
 			for (int i = 1; i <= m; i++) {
+
+				// 일괄 이동을 위한 저장 변수
+				int nhr = -1, nhc= -1, ntr= -1, ntc= -1;
+				int chr= -1, chc= -1, ctr= -1, ctc= -1;
 
 				// 현재 팀의 머리 사람 위치 구해서 이동
 				int[] hPos = headerPos[i];
@@ -98,9 +102,10 @@ public class Main {
 					if (nr < 0 || nr >= n || nc < 0 || nc >= n)
 						continue;
 					if (arr[nr][nc] == 4 || arr[nr][nc] == 3) {
-						headerPos[i] = new int[] { nr, nc };
-						arr[nr][nc] = 1;
-						arr[r][c] = 2;
+						nhr = nr;
+						nhc = nc;
+						chr = r;
+						chc = c;
 						break;
 					}
 				}
@@ -115,12 +120,23 @@ public class Main {
 					if (nr < 0 || nr >= n || nc < 0 || nc >= n)
 						continue;
 					if (arr[nr][nc] == 2) {
-						tailPos[i] = new int[] { nr, nc };
-						arr[nr][nc] = 3;
-						arr[r][c] = 4;
+						ntr = nr;
+						ntc = nc;
+						ctr = r;
+						ctc = c;
 						break;
 					}
 				}
+
+				// 일괄이동
+				headerPos[i] = new int[] { nhr, nhc };
+				arr[nhr][nhc] = 1;
+				arr[chr][chc] = 2;
+				
+				tailPos[i] = new int[] { ntr, ntc };
+				arr[ntr][ntc] = 3;
+				if (arr[ctr][ctc] != 1)
+					arr[ctr][ctc] = 4;
 			}
 
 			// 공 던지기

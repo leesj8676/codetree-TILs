@@ -187,6 +187,7 @@ public class Main {
 			if (nr < 0 || nr >= n || nc < 0 || nc >= n)
 				continue;
 			if (1 <= arr[nr][nc] && arr[nr][nc] <= 3 && !visited[nr][nc]) {
+                if (arr[nr][nc] != 2 && arr[curR][curC] == 1) continue; // 머리와 꼬리가 붙어있는경우 dfs 예외처리
 				visited[nr][nc] = true;
 				getDist(nr, nc, goalR, goalC, count + 1);
 				break;

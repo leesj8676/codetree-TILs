@@ -85,7 +85,7 @@ public class Main {
 							}
 						}
 						// 이동하지 않는 경우에도 복사 *** 확인 필요
-						moveMonsters[r][c][d] = monsters[r][c][d];
+						moveMonsters[r][c][d] += monsters[r][c][d];
 					}
 				}
 			}

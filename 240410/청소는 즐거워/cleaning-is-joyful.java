@@ -23,28 +23,25 @@ public class Main {
 
 		// 달팽이 배열 방향별 이동 횟수 (예): n:5 -> 1, 1, 2, 2, 3, 3, 4, 4, 4
 		// 규칙: 좌, 하, 우 상, 좌 .. 방향으로 반복해가며 1, 1, 2, ... 만큼씩 이동
-		int snails[] = new int[n + 4];
+		int snails[] = new int[2*n -1];
 
 		int ccnt = 0;
-		for (int i = 0; i < n + 4; i++) {
-			if (i % 2 == 0 && i != n + 3)
+		for (int i = 0; i < 2*n -1; i++) {
+			if (i % 2 == 0 && i != 2*n - 2)
 				++ccnt;
 			snails[i] = ccnt;
 		}
 
 		int snailCount = 0, snailIndex = 0; // 같은 방향으로 몇번 이동했는지 카운트 / snails의 인덱스
 
-		int[][] testArr = new int[n][n];
 		int r = n / 2;
 		int c = n / 2;
-		int testCnt = 1;
 
 		for (int i = 0; i < n * n - 1; i++) {
 			int d = snailIndex % 4;
 			int nr = r + dr[d];
 			int nc = c + dc[d];
 
-			testArr[nr][nc] = testCnt++;
 			r = nr;
 			c = nc;
 

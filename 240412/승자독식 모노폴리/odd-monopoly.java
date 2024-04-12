@@ -1,74 +1,191 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+
+/*
+ 
+5 4 4
+0 0 0 0 4
+1 0 0 0 0
+0 0 0 0 3
+0 0 0 0 0
+0 0 0 2 0
+4 1 1 3
+1 2 3 4
+2 1 3 4
+1 3 4 2
+4 3 2 1
+2 1 4 3
+2 4 3 1
+3 4 1 2
+4 2 3 1
+1 3 2 4
+4 2 1 3
+3 4 1 2
+4 3 1 2
+3 1 4 2
+3 4 1 2
+3 4 1 2
+1 2 3 4
+
+ * */
+
 public class Main {
-    public static void main(String[] args) {
-        
+	static class Person implements Comparable<Person> {
+		int r, c, index, d;
 
-        // 첫번째 : 문제 정의
-        // n x n 격자에서 m 명의 사람들이 
-        // 각자 동시에 우선순위에 맞게 이동
-        // 이동한 자리가 주인이 없으면, k 턴동안 그사람이 소유권
-        
-        // 사람들은
-        // 소유권이 없는 자리, 소유권이 있는 자리 순으로 이동
+		public Person(int r, int c, int index, int d) {
+			super();
+			this.r = r;
+			this.c = c;
+			this.index = index;
+			this.d = d;
+		}
 
-        // 남의 자리로 이동할 경우의수는 X, 
-        // 격자 바깥도 아마 안가나 봄..
+		@Override
+		public String toString() {
+			return "Person [r=" + r + ", c=" + c + ", index=" + index + ", d=" + d + "]";
+		}
 
-        // 이후, 같은 위치에 있는 사람들은 한명만 남고 다 사라짐
-        // 한 명이 남을때까지의 시간을 출력
+		@Override
+		public int compareTo(Main.Person o) {
+			return this.index - o.index;
+		}
 
-        // 두번째 : 함수, 변수 정의
+	}
 
-        // 사람 클래스를 만드는게 편할듯.. 
-        // person(r, c, index)
-        // people 리스트에서는 남은 사람만 관리하기 (사라진 사람 디버깅 외에는 볼 필요 없음)
+	public static void main(String[] args) throws Exception {
 
-        //nxn 배열은 사람별 내가 소유하고 있는지, 언제까지 내건지 판단할 필요가 있겠음
-        // 그것과 별개로, 겹치는지 확인할 필요는 있을듯.. -> 매 턴마다 nxn boolean 배열만 있으면 되겠음
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String[] split;
+		split = br.readLine().split(" ");
+		int n = Integer.parseInt(split[0]);
+		int m = Integer.parseInt(split[1]);
+		int k = Integer.parseInt(split[2]);
 
-        // 변수
-        // person 클래스
-        // alivePeople 리스트
-        // arr[n][n][m+1] 사람별 가지고 있는 땅 (위치에 몇턴까지 내 땅인지 입력)
-        // dr ,dc  상하좌우
-        // n, m, k
-        // directions[m][5] 사람별 각 방향에서 선호하는 다음 방향
+		// 변수
 
-        // 세번째 : 의사코드 작성
-        // person 클래스
-        // dr, dc
-        // n, m, k 입력 받기
+		int[] dr = new int[] { -999, -1, 1, 0, 0 };
+		int[] dc = new int[] { -999, 0, 0, -1, 1 };
+		ArrayList<Person> alivePeople = new ArrayList<>();
+		int[][] arr = new int[n][n]; // 위치에 몇턴까지 땅 소유할 수 있는지 입력
+		int[][] arrPerson = new int[n][n]; // 위치에 그 땅 소유한 사람 인덱스 입력
 
-        // arr 선언하기
-            // 각 사람별 현재 자기 위치는 k 로 설정 (k+1턴부터 비어있는 땅)
-        // boolean arrThisTurn 선언하기(입력 x)
+		for (int i = 0; i < n; i++) {
+			split = br.readLine().split(" ");
+			for (int j = 0; j < n; j++) {
+				int index = Integer.parseInt(split[j]);
+				if (index > 0) {
+					arr[i][j] = k; // 최초 시작 위치 -> -> k턴까지 index 번째 사람이 소유권
+					arrPerson[i][j] = index;
+					alivePeople.add(new Person(i, j, index, -1));
+				}
+			}
+		}
 
-        // directions 선언
-        // directions 입력받기
+		Collections.sort(alivePeople);
+		// 사람별 초기 방향
+		split = br.readLine().split(" ");
+		for (int i = 0; i < m; i++) {
+			alivePeople.get(i).d = Integer.parseInt(split[i]);
+		}
 
-        // alivePeople 리스트 초기화
+		// 사람별 각 방향에서 선호하는 다음 방향
+		int[][][] directions = new int[m + 1][5][5];
+		for (int index = 1; index <= m; index++) {
+			int[][] mat = new int[5][5];
+			for (int d = 0; d < 4; d++) {
+				split = br.readLine().split(" ");
+				for (int nd = 0; nd < 4; nd++) {
+					mat[d + 1][nd + 1] = Integer.parseInt(split[nd]);
+				}
+			}
+			directions[index] = mat;
+		}
 
-        // 무한 루프
-            // 1000번째 턴이면, -1 출력 후 break
+		for (int turn = 1;; turn++) {
+			if (turn == 1000) {
+				System.out.println(-1);
+				break;
+			}
 
-            // people 클래스 순서대로 실행
-                // 현재위치 r, c 얻기
-               // arrThisTurn = false 처리하기
+			int[][] arrThisTurn = new int[n][n]; // 동시 이동시 겹치는지 확인
 
-                // 비어있는 곳 가는 지 확인 플래그 세우기
-                // 4방탐색해서
-                    // 격자 밖이면 continue;
-                    // 격자 안이면서 비어있는 곳이면 플래그 세우고
-                    // nr, nc 구하기
-                // 플래그가 false면, 다시 4방탐색해서 nr, nc 구하기
+			// 남아있는 사람 1번부터 순회
+			int size = alivePeople.size();
+			for (int i = 0; i < size; i++) {
+				// 현재위치 r, c 얻기
+				// arrThisTurn = false 처리하기
+				Person p = alivePeople.get(i);
+				int r = p.r;
+				int c = p.c;
+				int d = p.d;
+				int index = p.index;
 
-                // 구한 nr, nc가 비어있는 곳이면
-                // arr에 업데이트
-                
-                // arrThisTurn이 이미 true 이면, 해당 사람은 리스트에서 제거하기
-                // i값 은 i-- 해주고 continue해야함
-                
-                // true가 아니면, true 처리 해주기
+				// 우선순위에 맞게 다음 갈 곳 탐색
+				boolean goEmptyArea = false; // 비어있는 곳 가는지 여부
+				int nr = -999, nc = -999, nd = 0; // 다음으로 갈 위치 및 방향
+				int[] mat = directions[index][d]; // 현재 사람이 가진 방향에서 우선순위
+				for (int dd = 1; dd <= 4; dd++) {
+					nr = r + dr[mat[dd]];
+					nc = c + dc[mat[dd]];
+					if (nr < 0 || nr >= n || nc < 0 || nc >= n)
+						continue;
+					if (arr[nr][nc] < turn) { // 해당 위치의 턴이 지금 턴보다 이전이면, 현재 빈 땅
+						goEmptyArea = true;
+						nd = mat[dd];
+						break;
+					}
+				}
 
-            // people클래스 사이즈가 1이면, 현재 턴 출력 후 break
-    }
+				// 빈땅을 못 찾았으면, 우선순위에서 맨 처음 나오는 자기 땅으로 다시 이동
+				if (!goEmptyArea) {
+					for (int dd = 1; dd <= 4; dd++) {
+						nr = r + dr[mat[dd]];
+						nc = c + dc[mat[dd]];
+						if (nr < 0 || nr >= n || nc < 0 || nc >= n)
+							continue;
+						if (arrPerson[nr][nc] == index) {
+							nd = mat[dd];
+							break;
+						}
+					}
+				}
+
+				// 구한 nr, nc가 비어있는 곳이면
+				// arr에 업데이트
+				if (goEmptyArea) {
+					if (arrThisTurn[nr][nc] != 0) { // 더 앞번의 사람이 이미 왔으면, 현재 사람 삭제
+						alivePeople.remove(i);
+						i--;
+						size--;
+					} else {
+						arrPerson[nr][nc] = index;
+						arrThisTurn[nr][nc] = index;
+						p.r = nr;
+						p.c = nc;
+						p.d = nd;
+					}
+				} else {
+					p.r = nr;
+					p.c = nc;
+					p.d = nd;
+				}
+			}
+
+			// 이번턴에 사람이 차지한 땅에 언제까지 유효한지 기록
+			for (int i2 = 0; i2 < arrThisTurn.length; i2++) {
+				for (int j2 = 0; j2 < arrThisTurn.length; j2++) {
+					if (arrThisTurn[i2][j2] > 0)
+						arr[i2][j2] = turn + k;
+				}
+			}
+
+			if (alivePeople.size() == 1) {
+				System.out.println(turn);
+				break;
+			}
+		}
+	}
 }

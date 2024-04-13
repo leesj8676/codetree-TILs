@@ -157,6 +157,8 @@ public class Main {
 					} else {
 						arrThisTurn[nr][nc] = index;
 					}
+				} else {
+					arrThisTurn[nr][nc] = index;
 				}
 			}
 
@@ -172,6 +174,7 @@ public class Main {
 			}
 			
 			// 이번턴에 사람이 차지한 땅에 언제까지 유효한지 기록
+			// 자기 자리로 다시 돌아간 경우도 소유권 추가됨
 			for (int i2 = 0; i2 < n; i2++) {
 				for (int j2 = 0; j2 < n; j2++) {
 					if (arrThisTurn[i2][j2] > 0) {

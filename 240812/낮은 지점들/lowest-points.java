@@ -23,12 +23,13 @@ public class Main {
 			} else {
 				int val = hashMap.get(x);
 				if (y < val) {
+					hashMap.remove(x);
 					hashMap.put(x, y);
 				}
 			}
 		}
 
-		int ans = 0;
+		long ans = 0;
 		for (int val : hashMap.values()) {
 			ans += val;
 		}

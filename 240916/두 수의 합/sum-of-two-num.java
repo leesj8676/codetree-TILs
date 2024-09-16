@@ -11,30 +11,23 @@ public class Main {
 		int k = Integer.parseInt(split[1]);
 		HashMap<Integer, Integer> hashMap = new HashMap<>();
 		split = br.readLine().split(" ");
+		
+		int ans = 0;
 		for (int i = 0; i < n; i++) {
-			int key = Integer.parseInt(split[i]);
-			if (hashMap.containsKey(key)) {
-				int val = hashMap.get(key);
-				hashMap.put(key, val + 1);
+			int key1 = Integer.parseInt(split[i]);
+			int key2 = k - key1;
+			if (hashMap.containsKey(key2)) {
+				ans += hashMap.get(key2);
+			}
+
+			if (hashMap.containsKey(key1)) {
+				int val1 = hashMap.get(key1);
+				hashMap.put(key1, val1 + 1);
 			} else {
-				hashMap.put(key, 1);
+				hashMap.put(key1, 1);
 			}
 		}
 		
-		int ans = 0;
-		for (Integer key1 : hashMap.keySet()) {
-			int key2 = k - key1;
-			if(!hashMap.containsKey(key2)) continue;
-			int val1 = hashMap.get(key1);
-			if (key1 == key2) {
-				ans += val1 * (val1 - 1) / 2;
-			} else {
-				int val2 = hashMap.get(key2);
-				ans += val1 * val2;
-				hashMap.put(key1, 0);
-				hashMap.put(key2, 0);
-			}
-		}
 		System.out.println(ans);
 	}
 }

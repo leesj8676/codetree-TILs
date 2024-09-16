@@ -25,12 +25,15 @@ public class Main {
 		for (Integer key1 : hashMap.keySet()) {
 			int key2 = k - key1;
 			if(!hashMap.containsKey(key2)) continue;
-			
 			int val1 = hashMap.get(key1);
-			int val2 = hashMap.get(key2);
-			ans += val1 * val2;
-			hashMap.put(key1, 0);
-			hashMap.put(key2, 0);
+			if (key1 == key2) {
+				ans += val1 * (val1 - 1) / 2;
+			} else {
+				int val2 = hashMap.get(key2);
+				ans += val1 * val2;
+				hashMap.put(key1, 0);
+				hashMap.put(key2, 0);
+			}
 		}
 		System.out.println(ans);
 	}

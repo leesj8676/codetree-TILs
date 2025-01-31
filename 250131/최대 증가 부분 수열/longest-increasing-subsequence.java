@@ -9,27 +9,23 @@ public class Main {
         
         int N = Integer.parseInt(br.readLine());
         int[] arr = new int[N];
-        int[] streak = new int[N];  // 현재 돌까지 밟을 수 있는 돌의 최대 개수
+        int[] dp = new int[N];  // 현재 위치를 밟을때 최대 증가수열 값
         split = br.readLine().split(" ");
         for(int i =0; i<N;i++) {
             arr[i] = Integer.parseInt(split[i]);
         }
 
-        streak[0] = 1;
+        int ans = 1;
+        Arrays.fill(dp, 1);
         for(int i = 1; i<N;i++) {
-            int maxVal = 1;
             for(int j = i-1; j>=0;j--) {
-                int val = streak[j];
-                if(arr[j] < arr[i]) val++;
-                maxVal = Math.max(maxVal, val);
+                if(arr[j] < arr[i]) {
+                   dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
             }
-            streak[i] = maxVal;
+            ans = Math.max(dp[i], ans);
         }
-
-        //for(int i =0; i<N;i++) {
-        //    System.out.println(streak[i]);
-        //}
         
-        System.out.println(streak[N-1]);
+        System.out.println(ans);
     }
 }
